@@ -1,6 +1,6 @@
 
 
-from pydantic import BaseModel, EmailStr, AnyUrl,Field
+from pydantic import BaseModel, EmailStr, AnyUrl,Field, field_validator
 from typing import Optional,Dict,List,Annotated
 
 class patient(BaseModel):
@@ -17,25 +17,49 @@ class patient(BaseModel):
     allergies:Annotated[Optional[List[str]], Field(default=None,)]
     contact_details: List[Dict[str,str]]
 
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls,value):
+        valid_domains=['gmail.com', 'yahoo.com', 'outlook.com']
+        domain_name = value.split('@')[-1]
+
+        if domain_name not in valid_domains:
+            raise ValueError('invalid email domain, please use a valid email domain')
+        return value
+
+    @field_validator('name')
+    @classmethod
+    def validate_name(cls,value):
+        return value.upper()
+
 def insert_patient(patient: patient):
-    print(patient.name)
-    print(patient.city)
-    print(patient.age)
-    print(patient.gender)
-    print(patient.height)
-    print(patient.weight)
-    print(patient.bmi)
-    print(patient.verdict)
+    print(f"name: {patient.name}")
+    print(f"city: {patient.city}")
+    print(f"age: {patient.age}")
+    print(f"gender: {patient.gender}")
+    print(f"height: {patient.height}")
+    print(f"weight: {patient.weight}")
+    print(f"bmi: {patient.bmi}")
+    print(f"verdict: {patient.verdict}")
+    print(f"allergies: {patient.allergies}")
+    print(f"contact_details: {patient.contact_details}")
+    print(f"email: {patient.email}")
+    print(f"linkdin: {patient.linkdin}")
 
 def update_patient(patient: patient):
-    print(patient.name)
-    print(patient.city)
-    print(patient.age)
-    print(patient.gender)
-    print(patient.height)
-    print(patient.weight)
-    print(patient.bmi)
-    print(patient.verdict)
+    print(f"name: {patient.name}")
+    print(f"city: {patient.city}")
+    print(f"age: {patient.age}")
+    print(f"gender: {patient.gender}")
+    print(f"height: {patient.height}")
+    print(f"weight: {patient.weight}")
+    print(f"bmi: {patient.bmi}")
+    print(f"verdict: {patient.verdict}")
+    print(f"allergies: {patient.allergies}")
+    print(f"contact_details: {patient.contact_details}")
+    print(f"email: {patient.email}")
+    print(f"linkdin: {patient.linkdin}")
+    
 
 patient_info = {'name': 'mrityuanjay kewat','email': 'abc@gmail.com','linkdin':'https://www.linkedin.com/in/mrityuanjay-kewat', 'city': 'mumbai', 'age': 30, 'gender': 'male', 'height': 175.0, 'weight': 45, 'bmi': 22.86, 'verdict': 'healthy','allergies': None,'contact_details':[{'phone': '1234567890', 'address': '123 Main St, Mumbai'}]}
                 
