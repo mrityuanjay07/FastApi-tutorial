@@ -1,6 +1,6 @@
 
 
-from pydantic import BaseModel, EmailStr, AnyUrl,Field, field_validator
+from pydantic import BaseModel, EmailStr, AnyUrl,Field, field_validator,model_validator
 from typing import Optional,Dict,List,Annotated
 
 class patient(BaseModel):
@@ -32,6 +32,12 @@ class patient(BaseModel):
     def validate_name(cls,value):
         return value.upper()
 
+    @model_validator(mode='after')
+    def validate_number(cls, model):
+        if model.age>60 and 'emergency' not in model.contact_details:
+            raise ValueError('emergency contact is required for patient above 60 years of age')
+        return model     
+
 def insert_patient(patient: patient):
     print(f"name: {patient.name}")
     print(f"city: {patient.city}")
@@ -61,7 +67,18 @@ def update_patient(patient: patient):
     print(f"linkdin: {patient.linkdin}")
     
 
-patient_info = {'name': 'mrityuanjay kewat','email': 'abc@gmail.com','linkdin':'https://www.linkedin.com/in/mrityuanjay-kewat', 'city': 'mumbai', 'age': 30, 'gender': 'male', 'height': 175.0, 'weight': 45, 'bmi': 22.86, 'verdict': 'healthy','allergies': None,'contact_details':[{'phone': '1234567890', 'address': '123 Main St, Mumbai'}]}
+patient_info = {'name': 'mrityuanjay kewat',
+                'email': 'abc@gmail.com',
+                'linkdin':'https://www.linkedin.com/in/mrityuanjay-kewat',
+                'city': 'mumbai',
+                'age': 86,
+                'gender': 'male',                      
+                'height': 175.0,
+                'weight': 45,
+                'bmi': 22.86,
+                'verdict': 'healthy',
+                'allergies': None,
+                'contact_details':[{'phone': '1234567890','emergency': '78577887', 'address': '123 Main St, Mumbai'}]}
                 
 patient1 = patient(**patient_info)
 insert_patient(patient1)
