@@ -1,6 +1,6 @@
 
 
-from pydantic import BaseModel, EmailStr, AnyUrl,Field, field_validator,model_validator
+from pydantic import BaseModel, EmailStr, AnyUrl,Field, field_validator,model_validator,computed_field
 from typing import Optional,Dict,List,Annotated
 
 class patient(BaseModel):
@@ -12,7 +12,7 @@ class patient(BaseModel):
     gender: str
     height: float= Field(gt=0)
     weight:Annotated[float, Field(gt=0, strict=True)]
-    bmi: float = Field(gt=0)
+    # bmi: float = Field(gt=0)
     verdict: str
     allergies:Annotated[Optional[List[str]], Field(default=None,)]
     contact_details: List[Dict[str,str]]
@@ -36,7 +36,12 @@ class patient(BaseModel):
     def validate_number(cls, model):
         if model.age>60 and 'emergency' not in model.contact_details:
             raise ValueError('emergency contact is required for patient above 60 years of age')
-        return model     
+        return model  
+    @computed_field
+    @property
+    def bmi(self) -> float:
+        bmi = round(self.weight/((self.height/100)**2), 2)
+        return bmi
 
 def insert_patient(patient: patient):
     print(f"name: {patient.name}")
@@ -71,11 +76,11 @@ patient_info = {'name': 'mrityuanjay kewat',
                 'email': 'abc@gmail.com',
                 'linkdin':'https://www.linkedin.com/in/mrityuanjay-kewat',
                 'city': 'mumbai',
-                'age': 86,
+                'age': 46,
                 'gender': 'male',                      
                 'height': 175.0,
                 'weight': 45,
-                'bmi': 22.86,
+                # 'bmi': 22.86,
                 'verdict': 'healthy',
                 'allergies': None,
                 'contact_details':[{'phone': '1234567890','emergency': '78577887', 'address': '123 Main St, Mumbai'}]}
