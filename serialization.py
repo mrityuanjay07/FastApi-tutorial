@@ -30,10 +30,10 @@ print(patient1.name)
 print(patient1.address.city)
 print(patient1.address.pincode)
 
-temp = patient1.model_dump()
+temp = patient1.model_dump(exclude={'age'})
 print(temp)
 print(type(temp))
 
-temp1 = patient1.model_dump_json()
+temp1 = patient1.model_dump_json(include={'name','address'})
 print(temp1)
 print(type(temp1))
