@@ -1,6 +1,16 @@
 from fastapi import FastAPI, Path,HTTPException,Query
+from pydantic import BaseModel,Field,computed_field
+from typing import Optional,Dict,List,Annotated
 import json
 app = FastAPI()
+
+class Patient(BaseModel):
+    id: Annotated[str, Field(min_length=3, max_length=10, title="Patient ID", description="This field is required and should be between 3 and 10 characters",example="P001")]
+    name: Annotated[str, Field(min_length=2, max_length=100, title="Patient Name", description="This field is required and should be between 2 and 100 characters",example="John Doe")]
+    age: Annotated[int, Field(gt=0, title="Patient Age", description="This field is required and should be a positive integer",example=30)]
+    height: Annotated[float, Field(gt=0, title="Patient Height", description="This field is required and should be a positive float",example=175.5)]
+    weight: Annotated[float, Field(gt=0, title="Patient Weight", description="This field is required and should be a positive float",example=70.0)]
+    bmi: Annotated[float, Field(gt=0, title="Patient BMI", description="This field is required and should be a positive float",example=22.5)]
 
 def load_data():
     with open("patient.json", "r") as f:
@@ -37,3 +47,4 @@ def sort_patients(sort_by: str = Query(..., description = 'Enter the field to so
         raise HTTPException(status_code = 400, detail= 'invalid order, please choose either asc or desc')
     sorted_data = sorted(data.values(), key=lambda x: x[sort_by], reverse=(order == 'desc'))
     return sorted_data
+
