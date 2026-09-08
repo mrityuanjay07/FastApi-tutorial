@@ -12,6 +12,23 @@ class Patient(BaseModel):
     weight: Annotated[float, Field(gt=0, title="Patient Weight", description="This field is required and should be a positive float",example=70.0)]
     bmi: Annotated[float, Field(gt=0, title="Patient BMI", description="This field is required and should be a positive float",example=22.5)]
 
+    @computed_field
+    @property
+    def bmi(self) -> float:
+        bmi = round(self.weight/((self.height/100)**2),2)
+        return bmi
+    @computed_field
+    @property
+    def verdict(self) -> str:
+        if self.bmi < 18.5:
+            return "Underweight"
+        elif 18.5 <= self.bmi < 24.9:
+            return "Normal weight"
+        elif 25 <= self.bmi < 29.9:
+            return "Overweight"
+        else:
+            return "Obesity"
+
 def load_data():
     with open("patient.json", "r") as f:
         data = json.load(f)
