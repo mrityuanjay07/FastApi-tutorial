@@ -4,6 +4,8 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel,Field,computed_field
 from typing import Literal, Optional,Dict,List,Annotated
 import json
+
+from serialization import patient
 app = FastAPI()
 
 class Patient(BaseModel):
@@ -97,4 +99,19 @@ def patient_update(patient_id: str, patient_update:patientUpdate):
     if patient_id not in data:
        raise HTTPException(status_code= 404, detail='patient not found')
 
-    
+    existing_patient_info = data[patient_id]
+    updated_patient_info=patient_update.model_dump(exclude_unset=True)
+
+    for key, value in updated_patient_info.items():
+        existing_patient_info[key]= value
+
+        data[patient_id] = existing_patient_info
+
+    existing_patient_info['id']= patient_id
+    patient_pydantic_obj= patient(**existing_patient_info)
+
+    existing_patient_info = patient_pydantic_obj.model_dump(exclude='id')
+
+    data[patient_id] = existing_patient_info
+
+    save_data(data)
